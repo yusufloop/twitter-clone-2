@@ -1,119 +1,110 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer, useFocusEffect } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
-import {
-  Alert,
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import IconSettings from "./IconSettings";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useEffect, useState } from "react";
+import React from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
-export default function App() {
-  const [text, setText] = useState("");
-  const [result, setResults] = useState([]);
-
-  const DATA = [
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-      title: "First Item",
-    },
-    {
-      id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-      title: "Second Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d72",
-      title: "Third Item",
-    },
-  ];
-
-  function onPress() {
-    Alert.alert("ucop hensem juga");
-  }
-
-  useEffect(() => {
-    fetch("https://www.reddit.com/r/aww.json")
-      .then((response) => response.json())
-      .then((resultsFromServer) => {
-        setResults(resultsFromServer.data.children);
-      });
-  }, []);
-
-  const Item = ({ item }) => (
-    <View style={{ marginTop: 10 }}>
-      <Text style={styles.title}>{item.data.title}</Text>
+function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>Home Screen</Text>
+      <Button
+        title="Go to Details"
+        onPress={() =>
+          navigation.navigate("Details", {
+            itemId: 86,
+            otherParam: "anything you want here",
+          })
+        }
+      ></Button>
     </View>
   );
+}
+
+function DetailsScreen({ route }) {
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("detail screen focused");
+
+      return () => {
+        console.log("detail screen unfocused");
+      };
+    }, [])
+  );
+  // const { itemId, otherParam } = route.params;
 
   return (
-    <View style={styles.container}>
-      <Text style={{ color: "red" }}>
-        Open up App.js to start working on your app!
-      </Text>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      {/* <Text>Details Screen for Screen {itemId}</Text>
+      <Text>{otherParam}</Text> */}
 
-      <Button
-        title="Press me"
-        color="magenta"
-        onPress={() => Alert.alert("yusuf hensem")}
-      />
-      <TouchableOpacity style={styles.button} onPress={onPress}>
-        {/* <IconSettings width={16} height={16} /> */}
-        <MaterialIcons name="display-settings" size={24} color="black" />
-        <Text>Press Here</Text>
-      </TouchableOpacity>
-      <View style={{ marginTop: 60 }}>
-        <Pressable
-          onPressIn={() => console.log("pressing in")}
-          onPressOut={() => console.log("pressing out")}
-          onLongPress={() => console.log("loong press")}
-          hitSlop={60}
-          style={styles.button}
-        >
-          <Text>Press Here</Text>
-        </Pressable>
-      </View>
-      <View>
-        <TextInput style={styles.input} onChangeText={setText} value={text} />
-        <Text>{text}</Text>
-      </View>
-      <View>
-        <FlatList
-        style= {{ marginHorizontal:30}}
-          data={result}
-          renderItem={({ item }) => <Item item={item} />}
-          keyExtractor={(item) => item.data.id}
-        />
-      </View>
+      <Text>Details Screen for Screen </Text>
     </View>
+  );
+}
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+// export default function App() {
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator>
+//         <Stack.Screen
+//           name="Home"
+//           component={HomeScreen}
+//           options={{ title: "My other Home" }}
+//         />
+//         <Stack.Screen name="Details" component={DetailsScreen} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+// export default function App() {
+//   return (
+//     <NavigationContainer>
+//       <Tab.Navigator>
+//         <Tab.Screen
+//           name="Home"
+//           component={HomeScreen}
+//           options={{ tabBarLabel:'my Home', tabBarIcon:({color, size }) => (
+//             <AntDesign name="home" size={size} color={color} />
+//           )}}
+//         />
+//         <Tab.Screen
+//           name="Details"
+//           component={DetailsScreen}
+//           options={{ tabBarLabel:'My Detail', tabBarIcon:({color, size }) => (
+//             <AntDesign name="setting" size={size} color={color} />
+//           )}}
+//         />
+      
+//       </Tab.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={HomeScreen} />
+      <Drawer.Screen name="Details" component={DetailsScreen} />
+    </Drawer.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // display: "flex",
-    // flex: 1,
+    flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    marginTop: 60,
-    // justifyContent: 'center',
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    width: 300,
-    borderWidth: 1,
-    padding: 10,
+    justifyContent: "center",
   },
 });
